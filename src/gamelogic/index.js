@@ -1,6 +1,8 @@
 import Vue from 'vue';
 import store from '@/store'
 
+const defaulAmoutOfPlayers = 1;
+
 // Returns a array containing numbers that have been locked down
 const findLockedDice = (dice, selectedDice) => {
     let lockedDice = []
@@ -309,6 +311,11 @@ const nextTurn = () => {
     calculateBonuses()
     calculateTotalScores()
 
+    let gameCompleted = isGameCompleted();
+
+    if (gameCompleted) {
+        return store.commit('gameCompleted', true)
+    }
 
     let newPlayer = store.getters.currentPlayer + 1
     let amountOfPlayers = store.getters.amountOfPlayers;
@@ -446,9 +453,20 @@ const calculateBonuses = () => {
     })
 }
 
+const isGameCompleted = () => {
+    let scores = store.getters.getScores;
+    let amountOfPlayers = store.getters.amountOfPlayers;
+    for (let i = 0; i < categories.length; i++) {
+        for (let j = 0; j < amountOfPlayers; j++) {
+            if (!scores[i]) return false;
+            if (scores[i][j] === undefined) return false;
+        }
+    }
+    return true;
+}
 
-const startNewGame = (options) => {
-    let amountOfPlayers = options.players || 2
+const startNewGame = (options = {}) => {
+    let amountOfPlayers = options.players || defaulAmoutOfPlayers
 
     let players = [];
     let selectedDice = [false, false, false, false, false];
@@ -488,16 +506,19 @@ const startNewGame = (options) => {
         dice,
         selectedDice,
         moves: 3,
-        displayDice
+        displayDice,
+        gameCompleted: false,
+        scores: []
     })
 }
 
 startNewGame({
-    players: 2
+    players: defaulAmoutOfPlayers
 })
 
 export default {
     findMatchedCategories,
     rollDice,
-    redeemPoints
+    redeemPoints,
+    startNewGame
 }

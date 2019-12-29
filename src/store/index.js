@@ -17,7 +17,8 @@ export default new Vuex.Store({
     totalScores: [],
     bonusScores: [],
     rolling: false,
-    displayDice: null
+    displayDice: null,
+    gameCompleted: null
   },
   mutations: {
     newGame(state, payload) {
@@ -29,6 +30,11 @@ export default new Vuex.Store({
       Vue.set(state, "selectedDice", payload.selectedDice)
       Vue.set(state, "moves", payload.moves)
       Vue.set(state, "displayDice", payload.displayDice)
+      Vue.set(state, "gameCompleted", payload.gameCompleted)
+      Vue.set(state, "scores", payload.scores)
+      Vue.set(state, "totalLowScores", payload.scores)
+      Vue.set(state, "totalScores", payload.scores)
+      Vue.set(state, "bonusScores", payload.scores)
     },
     nextTurn(state, payload) {
       Vue.set(state, "currentPlayer", payload.player);
@@ -79,6 +85,9 @@ export default new Vuex.Store({
     },
     setBonusScores(state, payload) {
       Vue.set(state, "bonusScores", payload.scores)
+    },
+    gameCompleted(state, bool) {
+      Vue.set(state, "gameCompleted", bool)
     }
   },
   getters: {
@@ -137,6 +146,9 @@ export default new Vuex.Store({
     getScore: (state) => (index) => state.scores[index],
     getScores: (state) => {
       return state.scores
+    },
+    gameCompleted: (state) => {
+      return state.gameCompleted
     }
   },
   actions: {

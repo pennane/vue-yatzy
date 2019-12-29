@@ -21,20 +21,15 @@ import gamelogic from "@/gamelogic";
 
 export default {
   name: "CategoryTotal",
-  data: () => {
-    return {};
-  },
-  props: {},
-  methods: {},
   computed: {
     amountOfPlayers() {
       return this.$store.getters.amountOfPlayers;
     },
     totalScores() {
+      this.forceRecomputeCounter;
       return this.$store.getters.getTotalScores;
     }
-  },
-  created() {}
+  }
 };
 </script>
 

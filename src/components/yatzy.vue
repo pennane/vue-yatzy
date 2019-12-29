@@ -32,8 +32,12 @@
           </div>
         </div>
 
-        <div class="rolling" v-if="rollsLeft > 0">
-          <button @click="rollDice()" class="rollButton">Heitä ({{ rollsLeft }} jäljellä)</button>
+        <div class="rolling" v-if="rollsLeft > 0 && !rolling">
+          <button @click="rollDice()" class="yatzyButton">Heitä ({{ rollsLeft }} jäljellä)</button>
+        </div>
+        <div v-show="gameCompleted" class="game-completed">
+          <span>Peli loppui. Haluatko aloittaa uuden ?</span>
+          <button @click="newGame()" class="yatzyButton">Aloita uusi</button>
         </div>
       </div>
     </div>
@@ -79,6 +83,11 @@ export default {
       this.$store.commit("rolling", {
         rolling: false
       });
+    },
+    async newGame() {
+      let sleep = this.$root.sleep;
+      await sleep(1000);
+      gamelogic.startNewGame();
     }
   },
   computed: {
@@ -105,6 +114,9 @@ export default {
     },
     dice() {
       return this.$store.getters.getDice;
+    },
+    gameCompleted() {
+      return this.$store.getters.gameCompleted;
     }
   },
   created() {}
@@ -168,6 +180,7 @@ export default {
 
 .right {
   margin-left: 1em;
+  margin-right: 1em;
   padding-bottom: 1em;
 }
 
@@ -206,15 +219,31 @@ h1 {
   padding-top: 1em;
 }
 
-.rollButton {
+.game-completed {
+  background-color: rgba(41, 22, 10, 0.8);
+  padding: 1em;
+  border-radius: 10px;
+  box-shadow: inset -2px 4px 2px 0 rgba(119, 70, 37, 0.3);
+  margin-top: 1em;
+}
+
+.game-completed span {
+  color: white;
+  font-weight: 500;
+  font-size: 1.2em;
+  padding-bottom: 0.3em;
+  display: block;
+}
+
+.yatzyButton {
   -webkit-appearance: none;
   text-decoration: none;
   padding: 0.8em 1.5em;
-  background-color: #556ebe;
-  background: linear-gradient(90deg, #556ebe, #566dbc);
+  background-color: #2f5092;
+  background: linear-gradient(90deg, #2f5092, #36679e);
   border-radius: 1.3em;
   color: #fff;
-  font-weight: 700;
+  font-weight: 400;
   cursor: pointer;
   box-shadow: 1px 2px 4px 0 rgba(0, 0, 0, 0.3);
   min-width: 75px;
@@ -227,7 +256,7 @@ h1 {
   font-size: 0.9em;
 }
 
-.rollButton:hover {
+.yatzyButton:hover {
   filter: brightness(0.9);
 }
 

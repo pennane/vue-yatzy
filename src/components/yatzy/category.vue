@@ -78,6 +78,10 @@ export default {
     this.$store.subscribe((mutation, state) => {
       if (mutation.type === "updateScoreForPlayer" && mutation.payload.id === this.payload.id) {
         this.scores[mutation.payload.player] = mutation.payload.score;
+      } else if (mutation.type === "newGame") {
+        for (let i = 0; i < this.amountOfPlayers; i++) {
+          this.scores[i] = undefined;
+        }
       }
     });
   }
