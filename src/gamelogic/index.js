@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import store from '@/store'
 
-const defaulAmoutOfPlayers = 1;
+const defaulAmoutOfPlayers = 2;
 
 // Returns a array containing numbers that have been locked down
 const findLockedDice = (dice, selectedDice) => {
