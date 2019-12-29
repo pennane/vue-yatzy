@@ -11,16 +11,15 @@
         >({{ possiblePoints }})</span
       >
       <span v-else :class="['category-possible-points', matches ? 'matching' : null]">
-        ({{ payload.best }})
+        <!-- ({{ payload.best }}) -->
       </span>
     </div>
     <div
       v-for="(player, index) in amountOfPlayers"
       class="category-player-points"
       :key="payload.name + '-' + index"
-      :id="payload.id + '-' + index"
     >
-      <span v-if="scores && scores[index]">
+      <span v-if="scores && scores[index] !== undefined">
         {{ scores[index] }}
       </span>
     </div>
@@ -85,40 +84,7 @@ export default {
 };
 </script>
 
-<style>
-.category {
-  display: flex;
-  border: 1px solid black;
-  border-top: none;
-}
-
-.category:first-child {
-  border: 1px solid black;
-}
-
-.category > div {
-  border-right: 1px solid black;
-  margin: 0 0.1em;
-}
-
-.category > div:last-child {
-  border-right: none;
-}
-
-.category-info {
-  flex: 0 0 35%;
-  display: flex;
-  justify-content: space-between;
-}
-
-.category-possible-points {
-  margin-right: 0.5em;
-}
-
-.category-player-points {
-  flex: 1 1 100%;
-}
-
+<style scoped>
 .category.matching {
   cursor: pointer;
 }

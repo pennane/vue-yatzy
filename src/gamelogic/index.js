@@ -1,10 +1,5 @@
-// Tuo vuex storen käytettäväksi
+import Vue from 'vue';
 import store from '@/store'
-
-
-const readyToRoll = (playerId) => {
-    return true;
-}
 
 // Returns a array containing numbers that have been locked down
 const findLockedDice = (dice, selectedDice) => {
@@ -239,6 +234,7 @@ const categories = [
 ];
 
 const findMatchedCategories = (dice) => {
+
     let matched = categories.filter(category => category.test(dice));
     let points = matched.map(category => category.points(dice));
     return {
@@ -248,6 +244,7 @@ const findMatchedCategories = (dice) => {
 }
 
 const rollDice = () => {
+
     let playerId = store.getters.currentPlayer;
 
     if (playerId === undefined) throw new Error("No player id to roll on");
@@ -256,6 +253,16 @@ const rollDice = () => {
 
     if (moves <= 0) {
         return;
+    }
+
+
+    if (store.getters.displayDice) {
+        store.commit('setSelectedDice', {
+            selectedDice: [false, false, false, false, false]
+        })
+        store.commit('displayDice', {
+            state: false
+        })
     }
 
     let currentDice = store.getters.getDice;
@@ -267,7 +274,11 @@ const rollDice = () => {
         dice.push(Math.floor(Math.random() * 6) + 1);
     }
 
+
     dice = dice.map((die, i) => lockedDice[i] ? currentDice[i] : die)
+
+
+
 
     store.commit('setDice', {
         playerId,
@@ -280,6 +291,10 @@ const rollDice = () => {
         store.commit('setMoves', {
             moves: 0
         })
+        store.commit('setSelectedDice', {
+            selectedDice: [true, true, true, true, true]
+        })
+        updateMatchedCategories()
     } else {
         store.commit('setMoves', {
             moves: movesLeft
@@ -290,6 +305,11 @@ const rollDice = () => {
 };
 
 const nextTurn = () => {
+    calculateLowScores()
+    calculateBonuses()
+    calculateTotalScores()
+
+
     let newPlayer = store.getters.currentPlayer + 1
     let amountOfPlayers = store.getters.amountOfPlayers;
 
@@ -299,7 +319,7 @@ const nextTurn = () => {
 
     store.commit('nextTurn', {
         player: newPlayer,
-        dice: [false, false, false, false, false],
+        displayDice: true,
         selectedDice: [null, null, null, null, null],
         moves: 3,
         matched: { categories: [], points: [] }
@@ -307,6 +327,8 @@ const nextTurn = () => {
 }
 
 const redeemPoints = (id) => {
+    if (store.getters.displayDice) return;
+
     let moves = store.getters.moves;
     if (moves === 3) return;
 
@@ -318,14 +340,18 @@ const redeemPoints = (id) => {
     }
 
     let playerDice = store.getters.getDice
-    let selectedDiceArray = store.getters.selectedDice;
-    let lockedDice = findLockedDice(playerDice, selectedDiceArray)
+    //let selectedDiceArray = store.getters.selectedDice;
+    //let lockedDice = findLockedDice(playerDice, selectedDiceArray)
 
     let category = categories[id]
 
     let points = 0;
-    if (category.test(lockedDice)) {
+    /*if (category.test(lockedDice)) {
         points = category.points(lockedDice)
+    }*/
+
+    if (category.test(playerDice)) {
+        points = category.points(playerDice)
     }
 
     store.commit('updateScoreForPlayer', {
@@ -333,23 +359,92 @@ const redeemPoints = (id) => {
         score: points,
         player: currentPlayer
     })
-
+    /*
+        store.commit('rolling', {
+            rolling: true
+        })
+    */
     nextTurn()
 }
 
-store.subscribe((mutation, state) => {
-    if (mutation.type === 'selectDie' || mutation.type === "unselectDie" || mutation.type === "setDice") {
-        let currentPlayer = store.getters.currentPlayer;
-        let playerDice = store.getters.getDice
-        let selectedDiceArray = store.getters.selectedDice;
-        let lockedDice = findLockedDice(playerDice, selectedDiceArray)
-        let matchedCategories = findMatchedCategories(lockedDice)
+const updateMatchedCategories = () => {
+    if (store.getters.displayDice) return;
+    let playerDice = store.getters.getDice
+    //let selectedDiceArray = store.getters.selectedDice;
+    //let lockedDice = findLockedDice(playerDice, selectedDiceArray)
+    //let matchedCategories = findMatchedCategories(lockedDice)
+    let matchedCategories = findMatchedCategories(playerDice)
+    store.commit('setMatching', {
+        matching: matchedCategories
+    })
+}
 
-        store.commit('setMatching', {
-            matching: matchedCategories
-        })
+store.subscribe((mutation, state) => {
+    if (mutation.type === "setDice") {
+        updateMatchedCategories()
     }
 })
+
+const calculateLowScores = () => {
+    let scores = store.getters.getScores;
+    let amountOfPlayers = store.getters.amountOfPlayers;
+
+    let calculated = []
+    for (let i = 0; i < amountOfPlayers; i++) {
+        let totalScore = 0;
+        for (let j = 0; j < 6; j++) {
+            if (scores[j] && scores[j][i]) {
+                totalScore += scores[j][i];
+            }
+        }
+        calculated[i] = totalScore;
+    }
+
+    store.commit('setTotalLowScores', {
+        scores: calculated
+    })
+}
+
+const calculateTotalScores = () => {
+    let scores = store.getters.getScores;
+    let amountOfPlayers = store.getters.amountOfPlayers;
+    let bonusScores = store.getters.getBonusScores;
+
+    let calculated = []
+    for (let i = 0; i < amountOfPlayers; i++) {
+        let totalScore = 0;
+        for (let j = 0; j < categories.length; j++) {
+            if (scores[j] && scores[j][i]) {
+                totalScore += scores[j][i];
+            }
+        }
+        if (bonusScores[i]) {
+            totalScore += bonusScores[i]
+        }
+        calculated[i] = totalScore;
+    }
+
+    store.commit('setTotalScores', {
+        scores: calculated
+    })
+}
+
+const calculateBonuses = () => {
+    let lowScores = store.getters.getTotalLowScores;
+    let amountOfPlayers = store.getters.amountOfPlayers;
+
+    let bonusScores = [];
+
+    for (let i = 0; i < amountOfPlayers; i++) {
+        if (lowScores[i] >= 63) {
+            bonusScores[i] = 50
+        }
+    }
+
+    store.commit('setBonusScores', {
+        scores: bonusScores
+    })
+}
 
 
 const startNewGame = (options) => {
@@ -357,7 +452,8 @@ const startNewGame = (options) => {
 
     let players = [];
     let selectedDice = [false, false, false, false, false];
-    let dice = [null, null, null, null, null]
+    let dice = [6, 6, 6, 6, 6]
+    let displayDice = true;
 
     // Luo tyhjät pelaaja oliot 
     for (let i = 0; i < amountOfPlayers; i++) {
@@ -384,26 +480,15 @@ const startNewGame = (options) => {
 
         storeableCategories.push(storeableCategory)
     })
-    store.commit("setCategories", {
-        categories: storeableCategories
-    });
-
-    store.commit("setPlayers", {
+    store.commit("newGame", {
+        categories: storeableCategories,
         players,
         startingPlayer,
-        amountOfPlayers
-    });
-
-    store.commit("setDice", {
-        dice: dice
-    });
-
-    store.commit("setSelectedDice", {
-        selectedDice: selectedDice
-    });
-
-    store.commit("setMoves", {
-        moves: 3
+        amountOfPlayers,
+        dice,
+        selectedDice,
+        moves: 3,
+        displayDice
     })
 }
 

@@ -1,12 +1,17 @@
 <template>
   <div class="category">
-    <div class="category-name">Total:</div>
+    <div class="category-info">
+      <span class="category-name">Total:</span>
+      <span class="category-possible-points">
+        (374)
+      </span>
+    </div>
     <div
-      v-for="player in amountOfPlayers"
+      v-for="(player, index) in amountOfPlayers"
       class="category-player-points"
-      :key="'total-' + (upper ? 'upper' : null) + (total ? 'total' : null) + '-' + player"
+      :key="'total-' + index"
     >
-      123
+      <span v-if="totalScores && totalScores[index]">{{ totalScores[index] }}</span>
     </div>
   </div>
 </template>
@@ -17,22 +22,16 @@ import gamelogic from "@/gamelogic";
 export default {
   name: "CategoryTotal",
   data: () => {
-    return {
-      used: null
-    };
+    return {};
   },
-  props: {
-    upper: {
-      type: Boolean
-    },
-    total: {
-      type: Boolean
-    }
-  },
+  props: {},
   methods: {},
   computed: {
     amountOfPlayers() {
       return this.$store.getters.amountOfPlayers;
+    },
+    totalScores() {
+      return this.$store.getters.getTotalScores;
     }
   },
   created() {}
@@ -40,11 +39,12 @@ export default {
 </script>
 
 <style scoped>
-.category {
-  display: flex;
+.category-info {
+  font-weight: 500;
+  color: gray;
 }
 
-.category-name {
-  flex: 0 0 35%;
+.category-player-points {
+  color: gray;
 }
 </style>

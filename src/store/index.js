@@ -12,12 +12,27 @@ export default new Vuex.Store({
     players: [],
     selectedDice: [false, false, false, false, false],
     moves: null,
-    scores: []
+    scores: [],
+    totalLowScores: [],
+    totalScores: [],
+    bonusScores: [],
+    rolling: false,
+    displayDice: null
   },
   mutations: {
+    newGame(state, payload) {
+      Vue.set(state, "categories", payload.categories)
+      state.amountOfPlayers = payload.amountOfPlayers;
+      state.players = payload.players;
+      state.currentPlayer = payload.startingPlayer
+      Vue.set(state, "dice", payload.dice)
+      Vue.set(state, "selectedDice", payload.selectedDice)
+      Vue.set(state, "moves", payload.moves)
+      Vue.set(state, "displayDice", payload.displayDice)
+    },
     nextTurn(state, payload) {
       Vue.set(state, "currentPlayer", payload.player);
-      Vue.set(state, "dice", payload.dice)
+      Vue.set(state, "displayDice", payload.displayDice)
       Vue.set(state, "selectedDice", payload.selectedDice)
       Vue.set(state, "moves", payload.moves)
       Vue.set(state, "matching", payload.matched)
@@ -31,14 +46,6 @@ export default new Vuex.Store({
       }
       let currentPlayer = state.currentPlayer
       state.scores[payload.id][currentPlayer] = payload.score
-    },
-    setPlayers(state, payload) {
-      state.amountOfPlayers = payload.amountOfPlayers;
-      state.players = payload.players;
-      state.currentPlayer = payload.startingPlayer
-    },
-    setCategories(state, payload) {
-      Vue.set(state, "categories", payload.categories)
     },
     setDice(state, payload) {
       Vue.set(state, "dice", payload.dice)
@@ -57,6 +64,21 @@ export default new Vuex.Store({
     },
     setMoves(state, payload) {
       Vue.set(state, "moves", payload.moves)
+    },
+    rolling(state, payload) {
+      Vue.set(state, "rolling", payload.rolling)
+    },
+    displayDice(state, payload) {
+      Vue.set(state, "displayDice", payload.state)
+    },
+    setTotalLowScores(state, payload) {
+      Vue.set(state, "totalLowScores", payload.scores)
+    },
+    setTotalScores(state, payload) {
+      Vue.set(state, "totalScores", payload.scores)
+    },
+    setBonusScores(state, payload) {
+      Vue.set(state, "bonusScores", payload.scores)
     }
   },
   getters: {
@@ -81,8 +103,41 @@ export default new Vuex.Store({
     moves: (state) => {
       return state.moves
     },
+    currentlyRolling: (state) => {
+      return state.rolling
+    },
+    "die0": (state) => {
+      return state.dice[0]
+    },
+    "die1": (state) => {
+      return state.dice[1]
+    },
+    "die2": (state) => {
+      return state.dice[2]
+    },
+    "die3": (state) => {
+      return state.dice[3]
+    },
+    "die4": (state) => {
+      return state.dice[4]
+    },
+    displayDice: (state) => {
+      return state.displayDice
+    },
+    getTotalLowScores: (state) => {
+      return state.totalLowScores
+    },
+    getTotalScores: (state) => {
+      return state.totalScores
+    },
+    getBonusScores: (state) => {
+      return state.bonusScores
+    },
     getCategory: (state) => (index) => state.categories[index],
-    getScore: (state) => (index) => state.scores[index]
+    getScore: (state) => (index) => state.scores[index],
+    getScores: (state) => {
+      return state.scores
+    }
   },
   actions: {
   },

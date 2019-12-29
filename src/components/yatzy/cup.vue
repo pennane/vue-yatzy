@@ -1,0 +1,101 @@
+<template>
+  <div class="cup-wrapper" @click="roll">
+    <img
+      :class="['cup', show || displayDice ? 'show' : null, wiggle ? 'wiggle' : null]"
+      :src="url"
+    />
+  </div>
+</template>
+
+<script>
+import gamelogic from "@/gamelogic";
+
+export default {
+  name: "Yatzy",
+  data: () => {
+    return {
+      url: require("@/assets/kuppi.png"),
+      wiggle: false,
+      show: false
+    };
+  },
+  methods: {
+    async roll() {
+      const sleep = this.$root.sleep;
+      this.show = true;
+      await sleep(1100);
+      this.wiggle = true;
+      await sleep(1000);
+      this.wiggle = false;
+      await sleep(30);
+      this.show = false;
+    }
+  },
+  computed: {
+    rolling() {
+      return this.$store.getters.currentlyRolling;
+    },
+    displayDice() {
+      return this.$store.getters.displayDice;
+    }
+  },
+  watch: {
+    rolling: function(newValue, oldValue) {
+      if (newValue === true) {
+        this.roll();
+      }
+    }
+  }
+};
+</script>
+
+<style scoped>
+.cup-wrapper {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+  overflow: none;
+}
+
+.cup {
+  width: 280px;
+  will-change: transform;
+
+  transform: translate3d(260px, -50px, 0);
+  transition: all 1s;
+}
+
+.show {
+  transform: translate3d(0, 0, 0);
+}
+
+.wiggle {
+  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+@keyframes shake {
+  10%,
+  90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+
+  20%,
+  80% {
+    transform: translate3d(2px, 0, 0);
+  }
+
+  30%,
+  50%,
+  70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+
+  40%,
+  60% {
+    transform: translate3d(4px, 0, 0);
+  }
+}
+</style>

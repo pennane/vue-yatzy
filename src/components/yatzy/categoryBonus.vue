@@ -1,8 +1,17 @@
 <template>
   <div class="category">
-    <div class="category-name">Bonus:</div>
-    <div v-for="player in amountOfPlayers" class="category-player-points" :key="'bonus-' + player">
-      123
+    <div class="category-info">
+      <span class="category-name">Bonus: (63 pisteestä)</span>
+      <span class="category-possible-points">
+        (50)
+      </span>
+    </div>
+    <div
+      v-for="(player, index) in amountOfPlayers"
+      class="category-player-points"
+      :key="'bonus-' + index"
+    >
+      <span v-if="bonusScores[index]">{{ bonusScores[index] }}</span>
     </div>
   </div>
 </template>
@@ -14,26 +23,28 @@ export default {
   name: "CategoryBonus",
   data: () => {
     return {
-      used: null
+      calculated: []
     };
   },
   props: {},
-  methods: {},
   computed: {
     amountOfPlayers() {
       return this.$store.getters.amountOfPlayers;
+    },
+    bonusScores() {
+      return this.$store.getters.getBonusScores;
     }
-  },
-  created() {}
+  }
 };
 </script>
 
 <style scoped>
-.category {
-  display: flex;
+.category-info {
+  font-weight: 500;
+  color: gray;
 }
 
-.category-name {
-  flex: 0 0 35%;
+.category-player-points {
+  color: gray;
 }
 </style>

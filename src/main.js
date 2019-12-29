@@ -10,4 +10,9 @@ new Vue({
   router,
   store,
   render: h => h(App),
+  methods: {
+    sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+  }
 }).$mount('#app');
