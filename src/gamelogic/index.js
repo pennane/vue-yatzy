@@ -335,7 +335,7 @@ const nextTurn = () => {
 
 const redeemPoints = (id) => {
     if (store.getters.displayDice) return;
-
+    if (store.getters.currentlyRolling) return;
     let moves = store.getters.moves;
     if (moves === 3) return;
 

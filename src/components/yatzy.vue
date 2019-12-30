@@ -167,7 +167,6 @@ export default {
 }
 
 .game {
-  margin-top: 1em;
   max-width: 1200px;
 }
 
@@ -176,11 +175,11 @@ export default {
   padding: 1.5em;
   padding-top: 0.5em;
   padding-bottom: 2em;
+  margin-top: 1em;
 }
 
 .right {
   margin-left: 1em;
-  margin-right: 1em;
   padding-bottom: 1em;
 }
 
@@ -199,6 +198,7 @@ h1 {
   align-items: center;
   align-self: flex-end;
   margin: 50px 0;
+  margin-bottom: 30px;
 }
 
 .dice-visual-wrapper {
@@ -216,7 +216,7 @@ h1 {
 }
 
 .rolling {
-  padding-top: 1em;
+  padding-top: 2em;
 }
 
 .game-completed {
@@ -267,7 +267,7 @@ h1 {
   background-color: #e6e6e6;
 }
 
-@media screen and (max-width: 520px) {
+@media screen and (max-width: 600px) {
   .game {
     flex-direction: column-reverse;
   }

@@ -154,6 +154,10 @@ export default {
   top: 45%;
 }
 
+.last-selection .die {
+  cursor: initial;
+}
+
 .hidden {
   visibility: hidden;
 }

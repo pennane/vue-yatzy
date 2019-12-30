@@ -1,13 +1,20 @@
 <template>
   <div
-    :class="['category', matches ? 'matching' : null, scores[currentPlayer] ? 'used' : null]"
+    :class="[
+      'category',
+      matches ? 'matching' : null,
+      scores[currentPlayer] ? 'used' : null,
+      useable ? 'useable' : null
+    ]"
     @mouseover="hover = true"
     @mouseleave="hover = false"
     @click="redeemPoints()"
   >
     <div class="category-info">
       <span class="category-name">{{ payload.name }}</span>
-      <span v-if="hover" :class="['category-possible-points', matches ? 'matching' : null]"
+      <span
+        v-if="hover && useable"
+        :class="['category-possible-points', matches ? 'matching' : null]"
         >({{ possiblePoints }})</span
       >
       <span v-else :class="['category-possible-points', matches ? 'matching' : null]">
@@ -57,6 +64,15 @@ export default {
     },
     currentPlayer() {
       return this.$store.getters.currentPlayer;
+    },
+    rolling() {
+      return this.$store.getters.currentlyRolling;
+    },
+    displayDice() {
+      return this.$store.getters.displayDice;
+    },
+    useable() {
+      return !this.rolling && !this.displayDice
     }
   },
   created() {
@@ -89,7 +105,7 @@ export default {
 </script>
 
 <style scoped>
-.category.matching {
+.category.useable {
   cursor: pointer;
 }
 

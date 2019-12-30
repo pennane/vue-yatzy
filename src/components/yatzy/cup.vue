@@ -54,23 +54,28 @@ export default {
   position: absolute;
   z-index: 2;
   pointer-events: none;
-  overflow: none;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
 }
 
 .cup {
   width: 280px;
   will-change: transform;
-
+  transform: translate3d(260px, -30px, 0);
   transform: translate3d(260px, -50px, 0);
   transition: all 1s;
+  padding-top: 1em;
 }
 
 .show {
+  transform: translate3d(0, 15px, 0);
   transform: translate3d(0, 0, 0);
 }
 
 .wiggle {
   animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  transform: translate3d(0, 15px, 0);
   transform: translate3d(0, 0, 0);
   backface-visibility: hidden;
   perspective: 1000px;
