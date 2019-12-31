@@ -1,7 +1,7 @@
 <template>
   <div class="cup-wrapper" @click="roll">
     <img
-      :class="['cup', show || displayDice ? 'show' : null, wiggle ? 'wiggle' : null]"
+      :class="['cup', onScreen ? 'show' : null, wiggle ? 'wiggle' : null]"
       :src="url"
     />
   </div>
@@ -33,10 +33,16 @@ export default {
   },
   computed: {
     rolling() {
-      return this.$store.getters.currentlyRolling;
+      return this.$store.getters['game/getCurrentlyRolling'];
     },
     displayDice() {
-      return this.$store.getters.displayDice;
+      return this.$store.getters['game/getDisplayDice'];
+    },
+    gameNotStarted() {
+      return this.$store.getters['game/getNoGameStarted']
+    },
+    onScreen() {
+      return this.show || this.displayDice || this.gameNotStarted
     }
   },
   watch: {

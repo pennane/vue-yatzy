@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import store from '@/store'
 
-const defaulAmoutOfPlayers = 2;
+const defaultAmoutOfPlayers = 2;
 
 // Returns a array containing numbers that have been locked down
 const findLockedDice = (dice, selectedDice) => {
@@ -235,6 +235,20 @@ const categories = [
     }
 ];
 
+let storeableCategories = []
+
+categories.forEach(category => {
+    let storeableCategory = {
+        name: category.name,
+        description: category.description,
+        id: category.id,
+        upper: category.upper,
+        best: category.best
+    };
+
+    storeableCategories.push(storeableCategory)
+})
+
 const findMatchedCategories = (dice) => {
 
     let matched = categories.filter(category => category.test(dice));
@@ -247,28 +261,28 @@ const findMatchedCategories = (dice) => {
 
 const rollDice = () => {
 
-    let playerId = store.getters.currentPlayer;
+    let playerId = store.getters['game/getCurrentPlayer'];
 
     if (playerId === undefined) throw new Error("No player id to roll on");
 
-    let moves = store.getters.moves;
+    let moves = store.getters['game/getMoves'];
 
     if (moves <= 0) {
         return;
     }
 
 
-    if (store.getters.displayDice) {
-        store.commit('setSelectedDice', {
+    if (store.getters['game/getDisplayDice']) {
+        store.commit('game/SET_SELECTED_DICE', {
             selectedDice: [false, false, false, false, false]
         })
-        store.commit('displayDice', {
+        store.commit('game/SET_DISPLAY_DICE_STATE', {
             state: false
         })
     }
 
-    let currentDice = store.getters.getDice;
-    let lockedDice = store.getters.selectedDice
+    let currentDice = store.getters['game/getDice'];
+    let lockedDice = store.getters['game/getSelectedDice']
 
     let dice = [];
 
@@ -276,13 +290,9 @@ const rollDice = () => {
         dice.push(Math.floor(Math.random() * 6) + 1);
     }
 
-
     dice = dice.map((die, i) => lockedDice[i] ? currentDice[i] : die)
 
-
-
-
-    store.commit('setDice', {
+    store.commit('game/SET_DICE', {
         playerId,
         dice
     })
@@ -290,19 +300,18 @@ const rollDice = () => {
     let movesLeft = moves - 1
 
     if (movesLeft <= 0) {
-        store.commit('setMoves', {
+        store.commit('game/SET_MOVES', {
             moves: 0
         })
-        store.commit('setSelectedDice', {
+        store.commit('game/SET_SELECTED_DICE', {
             selectedDice: [true, true, true, true, true]
         })
         updateMatchedCategories()
     } else {
-        store.commit('setMoves', {
+        store.commit('game/SET_MOVES', {
             moves: movesLeft
         })
     }
-
 
 };
 
@@ -314,17 +323,17 @@ const nextTurn = () => {
     let gameCompleted = isGameCompleted();
 
     if (gameCompleted) {
-        return store.commit('gameCompleted', true)
+        return store.commit('game/SET_GAME_COMPLETED_STATE', true)
     }
 
-    let newPlayer = store.getters.currentPlayer + 1
-    let amountOfPlayers = store.getters.amountOfPlayers;
+    let newPlayer = store.getters['game/getCurrentPlayer'] + 1;
+    let amountOfPlayers = store.getters['game/getAmountOfPlayers'];
 
     if (newPlayer >= amountOfPlayers) {
         newPlayer = 0
     }
 
-    store.commit('nextTurn', {
+    store.commit('game/NEXT_TURN', {
         player: newPlayer,
         displayDice: true,
         selectedDice: [null, null, null, null, null],
@@ -334,67 +343,55 @@ const nextTurn = () => {
 }
 
 const redeemPoints = (id) => {
-    if (store.getters.displayDice) return;
-    if (store.getters.currentlyRolling) return;
-    let moves = store.getters.moves;
+    if (store.getters['game/getDisplayDice']) return;
+    if (store.getters['game/getCurrentlyRolling']) return;
+    let moves = store.getters['game/getMoves'];
     if (moves === 3) return;
 
-    let score = store.getters.getScore(id)
-    let currentPlayer = store.getters.currentPlayer
+    let score = store.getters['game/getScore'](id)
+    let currentPlayer = store.getters['game/getCurrentPlayer']
 
     if (score && score[currentPlayer] !== undefined) {
         return
     }
 
-    let playerDice = store.getters.getDice
-    //let selectedDiceArray = store.getters.selectedDice;
-    //let lockedDice = findLockedDice(playerDice, selectedDiceArray)
-
+    let playerDice = store.getters['game/getDice']
     let category = categories[id]
 
     let points = 0;
-    /*if (category.test(lockedDice)) {
-        points = category.points(lockedDice)
-    }*/
 
     if (category.test(playerDice)) {
         points = category.points(playerDice)
     }
 
-    store.commit('updateScoreForPlayer', {
+    store.commit('game/UPDATE_SCORE_FOR_PLAYER', {
         id: id,
         score: points,
         player: currentPlayer
     })
-    /*
-        store.commit('rolling', {
-            rolling: true
-        })
-    */
+
     nextTurn()
 }
 
 const updateMatchedCategories = () => {
-    if (store.getters.displayDice) return;
-    let playerDice = store.getters.getDice
-    //let selectedDiceArray = store.getters.selectedDice;
-    //let lockedDice = findLockedDice(playerDice, selectedDiceArray)
-    //let matchedCategories = findMatchedCategories(lockedDice)
+    if (store.getters['game/getDisplayDice']) return;
+    let playerDice = store.getters['game/getDice']
     let matchedCategories = findMatchedCategories(playerDice)
-    store.commit('setMatching', {
+
+    store.commit('game/SET_MATCHING', {
         matching: matchedCategories
     })
 }
 
 store.subscribe((mutation, state) => {
-    if (mutation.type === "setDice") {
+    if (mutation.type === "game/SET_DICE") {
         updateMatchedCategories()
     }
 })
 
 const calculateLowScores = () => {
-    let scores = store.getters.getScores;
-    let amountOfPlayers = store.getters.amountOfPlayers;
+    let scores = store.getters['game/getScores'];
+    let amountOfPlayers = store.getters['amountOfPlayers'];
 
     let calculated = []
     for (let i = 0; i < amountOfPlayers; i++) {
@@ -407,15 +404,15 @@ const calculateLowScores = () => {
         calculated[i] = totalScore;
     }
 
-    store.commit('setTotalLowScores', {
+    store.commit('game/SET_TOTAL_LOW_SCORES', {
         scores: calculated
     })
 }
 
 const calculateTotalScores = () => {
-    let scores = store.getters.getScores;
-    let amountOfPlayers = store.getters.amountOfPlayers;
-    let bonusScores = store.getters.getBonusScores;
+    let scores = store.getters['game/getScores'];
+    let amountOfPlayers = store.getters['game/getAmountOfPlayers'];
+    let bonusScores = store.getters['game/getBonusScores'];
 
     let calculated = []
     for (let i = 0; i < amountOfPlayers; i++) {
@@ -431,14 +428,14 @@ const calculateTotalScores = () => {
         calculated[i] = totalScore;
     }
 
-    store.commit('setTotalScores', {
+    store.commit('game/SET_TOTAL_SCORES', {
         scores: calculated
     })
 }
 
 const calculateBonuses = () => {
-    let lowScores = store.getters.getTotalLowScores;
-    let amountOfPlayers = store.getters.amountOfPlayers;
+    let lowScores = store.getters['game/getTotalLowScores'];
+    let amountOfPlayers = store.getters['game/getAmountOfPlayers'];
 
     let bonusScores = [];
 
@@ -448,14 +445,14 @@ const calculateBonuses = () => {
         }
     }
 
-    store.commit('setBonusScores', {
+    store.commit('game/SET_BONUS_SCORES', {
         scores: bonusScores
     })
 }
 
 const isGameCompleted = () => {
-    let scores = store.getters.getScores;
-    let amountOfPlayers = store.getters.amountOfPlayers;
+    let scores = store.getters['game/getScores'];
+    let amountOfPlayers = store.getters['game/getAmountOfPlayers'];
     for (let i = 0; i < categories.length; i++) {
         for (let j = 0; j < amountOfPlayers; j++) {
             if (!scores[i]) return false;
@@ -466,7 +463,8 @@ const isGameCompleted = () => {
 }
 
 const startNewGame = (options = {}) => {
-    let amountOfPlayers = options.players || defaulAmoutOfPlayers
+    console.log(options)
+    let amountOfPlayers = options.players || defaultAmoutOfPlayers
 
     let players = [];
     let selectedDice = [false, false, false, false, false];
@@ -485,21 +483,7 @@ const startNewGame = (options = {}) => {
 
     players[startingPlayer].turn = true;
 
-    let storeableCategories = []
-
-    categories.forEach(category => {
-        let storeableCategory = {
-            name: category.name,
-            description: category.description,
-            id: category.id,
-            upper: category.upper,
-            best: category.best
-        };
-
-        storeableCategories.push(storeableCategory)
-    })
-    store.commit("newGame", {
-        categories: storeableCategories,
+    store.commit("game/START_NEW_GAME", {
         players,
         startingPlayer,
         amountOfPlayers,
@@ -508,13 +492,23 @@ const startNewGame = (options = {}) => {
         moves: 3,
         displayDice,
         gameCompleted: false,
-        scores: []
+        scores: [],
+        noGameStarted: false,
+        categories: storeableCategories
     })
 }
 
-startNewGame({
-    players: defaulAmoutOfPlayers
-})
+const initializeDefaultData = () => {
+
+
+    store.commit('defaultData/SET_DEFAULT_DATA', {
+        categories: storeableCategories,
+        defaultAmoutOfPlayers: defaultAmoutOfPlayers
+    })
+}
+
+
+initializeDefaultData()
 
 export default {
     findMatchedCategories,

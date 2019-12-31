@@ -60,26 +60,30 @@ export default {
   },
   computed: {
     amountOfPlayers() {
-      return this.$store.getters.amountOfPlayers;
+      return this.$store.getters['game/getAmountOfPlayers'];
     },
     currentPlayer() {
-      return this.$store.getters.currentPlayer;
+      return this.$store.getters['game/getCurrentPlayer'];
     },
     rolling() {
-      return this.$store.getters.currentlyRolling;
+      return this.$store.getters['game/getCurrentlyRolling'];
     },
     displayDice() {
-      return this.$store.getters.displayDice;
+      return this.$store.getters['game/getDisplayDice'];
+    },
+    gameNotStarted() {
+      return this.$store.getters["game/getNoGameStarted"];
     },
     useable() {
-      return !this.rolling && !this.displayDice
+      return !this.rolling && !this.displayDice && !this.gameNotStarted
     }
   },
   created() {
     this.$store.watch(
-      (state, getters) => getters.matching,
+      (state, getters) => getters['game/getMatching'],
       (newValue, oldValue) => {
         let { categories, points } = newValue;
+        
         if (!categories) return false;
 
         if (categories.some(category => category === this.payload.id)) {
@@ -92,9 +96,9 @@ export default {
       }
     );
     this.$store.subscribe((mutation, state) => {
-      if (mutation.type === "updateScoreForPlayer" && mutation.payload.id === this.payload.id) {
+      if (mutation.type === "game/UPDATE_SCORE_FOR_PLAYER" && mutation.payload.id === this.payload.id) {
         this.scores[mutation.payload.player] = mutation.payload.score;
-      } else if (mutation.type === "newGame") {
+      } else if (mutation.type === "game/START_NEW_GAME") {
         for (let i = 0; i < this.amountOfPlayers; i++) {
           this.scores[i] = undefined;
         }

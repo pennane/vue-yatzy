@@ -1,5 +1,5 @@
 <template>
-  <div class="die-wrapper" :class="[rolling || displayDice ? 'rolling' : null]">
+  <div class="die-wrapper" :class="[translateToCenter ? 'rolling' : null]">
     <div
       :class="[
         'die-inner-wrapper',
@@ -10,9 +10,8 @@
       @click="select()"
     >
       <div
-        class="die"
+        :class="['die', this.number ? 'd' + this.number : 'dnull']"
         :style="{
-          backgroundImage: 'url(' + this.image + ')',
           transform: 'rotate(' + this.rotation + 'deg)'
         }"
       />
@@ -42,14 +41,15 @@ export default {
     select(bool) {
       if (this.moves <= 0) return;
       if (this.displayDice) return;
+      if (this.rolling) return;
       let value = bool ? bool : !this.selected;
       this.setSelected(value);
       if (value) {
-        this.$store.commit("selectDie", {
+        this.$store.commit("game/SELECT_DIE", {
           index: this.index
         });
       } else {
-        this.$store.commit("unselectDie", {
+        this.$store.commit("game/UNSELECT_DIE", {
           index: this.index
         });
       }
@@ -63,17 +63,14 @@ export default {
     }
   },
   computed: {
-    image: function() {
-      return require("@/assets/dice/die" + this.number + ".png");
-    },
     moves: function() {
-      return this.$store.getters.moves;
+      return this.$store.getters["game/getMoves"];
     },
     number: function() {
-      return this.$store.getters["die" + this.index];
+      return this.$store.getters["game/die" + this.index];
     },
     rolling: function() {
-      return this.$store.getters.currentlyRolling;
+      return this.$store.getters["game/getCurrentlyRolling"];
     },
     lastSelection: function() {
       return this.moves === 0;
@@ -82,12 +79,18 @@ export default {
       return this.selected && this.moves > 0;
     },
     displayDice: function() {
-      return this.$store.getters.displayDice;
+      return this.$store.getters["game/getDisplayDice"];
+    },
+    gameNotStarted() {
+      return this.$store.getters["game/getNoGameStarted"];
+    },
+    translateToCenter() {
+      return this.rolling || this.displayDice || this.gameNotStarted;
     }
   },
   created() {
     this.$store.watch(
-      (state, getters) => getters.selectedDice,
+      (state, getters) => getters["game/getSelectedDice"],
       (newValue, oldValue) => {
         this.setSelected(newValue[this.index]);
       }
@@ -114,6 +117,34 @@ export default {
   transition-timing-function: ease;
 }
 
+.d1 {
+  background-image: url('~@/assets/dice/die1.png')
+}
+
+.d2 {
+  background-image: url('~@/assets/dice/die2.png')
+}
+
+.d3 {
+  background-image: url('~@/assets/dice/die3.png')
+}
+
+.d4 {
+  background-image: url('~@/assets/dice/die4.png')
+}
+
+.d5 {
+  background-image: url('~@/assets/dice/die5.png')
+}
+
+.d6 {
+  background-image: url('~@/assets/dice/die6.png')
+}
+
+.dnull {
+  background-image: url('~@/assets/dice/dienull.png')
+}
+
 .die {
   height: 40px;
   width: 40px;
@@ -123,6 +154,10 @@ export default {
   cursor: pointer;
   transition: all 0.6s;
   box-shadow: 5px 4px 0px 0 rgba(0, 0, 0, 0.5);
+}
+
+.rolling .die {
+  cursor: initial;
 }
 
 .rolling:nth-child(1) > .die-inner-wrapper:not(.selected) {

@@ -23,11 +23,11 @@ export default {
   name: "CategoryTotal",
   computed: {
     amountOfPlayers() {
-      return this.$store.getters.amountOfPlayers;
+      return this.$store.getters['game/getAmountOfPlayers'];
     },
     totalScores() {
       this.forceRecomputeCounter;
-      return this.$store.getters.getTotalScores;
+      return this.$store.getters['game/getTotalScores'];
     }
   }
 };

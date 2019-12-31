@@ -1,12 +1,15 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
+  <div class="default-app-view">
+    <Yatzy />
   </div>
 </template>
 
 <script>
+import Yatzy from "@/components/yatzy.vue";
 export default {
-  name: "home",
-  components: {}
+  name: "Home",
+  components: {
+    Yatzy
+  }
 };
 </script>

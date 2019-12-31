@@ -1,22 +1,18 @@
 <template>
   <div id="app">
-    <Yatzy />
+    <router-view />
   </div>
 </template>
 
 <script>
-import Yatzy from "@/components/yatzy.vue";
 export default {
-  name: "App",
-  components: {
-    Yatzy
-  }
+  name: "App"
 };
 </script>
 
 <style>
 #app {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
+  font-family: "Inter", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
@@ -25,5 +21,6 @@ export default {
 body {
   margin: 0;
   background-image: url("~@/assets/wood.png");
+      background-size: 400px;
 }
 </style>

@@ -6,7 +6,7 @@
       :class="['category-player-points', currentPlayer === index ? 'currentPlayer' : null]"
       :key="'player' + '-' + index"
     >
-      <span> Pelaaja {{ player }} </span>
+      <span :style="{'opacity':gameNotStarted?0:1}"> Pelaaja {{ player }} </span>
       <span v-show="currentPlayer === index">*</span>
     </div>
   </div>
@@ -19,11 +19,14 @@ export default {
   name: "Players",
   computed: {
     amountOfPlayers() {
-      return this.$store.getters.amountOfPlayers;
+      return this.$store.getters['game/getAmountOfPlayers'];
     },
     currentPlayer() {
-      return this.$store.getters.currentPlayer;
-    }
+      return this.$store.getters['game/getCurrentPlayer'];
+    },
+    gameNotStarted() {
+      return this.$store.getters["game/getNoGameStarted"];
+    },
   }
 };
 </script>

@@ -28,10 +28,10 @@ export default {
   methods: {},
   computed: {
     amountOfPlayers() {
-      return this.$store.getters.amountOfPlayers;
+      return this.$store.getters['game/getAmountOfPlayers'];
     },
     lowTotalScores() {
-      return this.$store.getters.getTotalLowScores;
+      return this.$store.getters['game/getTotalLowScores'];
     }
   },
   created() {}

@@ -11,7 +11,7 @@
       class="category-player-points"
       :key="'bonus-' + index"
     >
-      <span v-if="bonusScores[index]">{{ bonusScores[index] }}</span>
+      <span v-if="bonusScores && bonusScores[index]">{{ bonusScores[index] }}</span>
     </div>
   </div>
 </template>
@@ -29,10 +29,10 @@ export default {
   props: {},
   computed: {
     amountOfPlayers() {
-      return this.$store.getters.amountOfPlayers;
+      return this.$store.getters['game/getAmountOfPlayers'] || this.$store.getters['defaultData/getAmountOfPlayers'];
     },
     bonusScores() {
-      return this.$store.getters.getBonusScores;
+      return this.$store.getters['game/getBonusScores'];
     }
   }
 };
