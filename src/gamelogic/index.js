@@ -463,9 +463,7 @@ const isGameCompleted = () => {
 }
 
 const startNewGame = (options = {}) => {
-    console.log(options)
     let amountOfPlayers = options.players || defaultAmoutOfPlayers
-
     let players = [];
     let selectedDice = [false, false, false, false, false];
     let dice = [6, 6, 6, 6, 6]
