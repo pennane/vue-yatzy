@@ -1,7 +1,7 @@
 <template>
   <div class="category">
     <div class="category-info">
-      <span class="category-name">Total:</span>
+      <span class="category-name">Yhteensä:</span>
       <span class="category-possible-points">
         (374)
       </span>

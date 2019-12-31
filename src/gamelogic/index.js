@@ -391,7 +391,7 @@ store.subscribe((mutation, state) => {
 
 const calculateLowScores = () => {
     let scores = store.getters['game/getScores'];
-    let amountOfPlayers = store.getters['amountOfPlayers'];
+    let amountOfPlayers = store.getters['game/getAmountOfPlayers'];
 
     let calculated = []
     for (let i = 0; i < amountOfPlayers; i++) {
