@@ -113,7 +113,7 @@ export default {
   margin: 0.3em;
   top: 0;
   position: absolute;
-  transition: transform 0.6s;
+  transition: transform 0.6s, top 0.6s;
   transition-timing-function: ease;
 }
 
