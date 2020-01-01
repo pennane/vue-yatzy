@@ -1,29 +1,85 @@
+
+[![Netlify Status](https://api.netlify.com/api/v1/badges/4872bc0f-faa4-41c6-a475-be840c90bd38/deploy-status)](https://app.netlify.com/sites/admiring-heisenberg-be714c/deploys)
 # yatzy
 
-## Project setup
-```
+  
+
+### Suomenkielinen yatzy peli
+
+  
+
+  
+
+Pelaa [täällä](https://yatzy.pennanen.dev/).
+
+  
+
+![Kuva pelistä](doc/images/cover.png)
+
+  
+
+## TODO:
+
+  
+
+- [ ] Mahdollisuus keskeyttää peli
+
+- [ ] Keyboard shortcutit pelin toiminnoille
+
+- [ ] Pisteiden tallennus / Parhaat pisteet
+
+- [ ] Visuaalinen palaute pelin voittajasta / Pisteiden korostaminen
+
+- [ ] Äänitehosteet
+
+  
+
+## Ympäristön asennus
+
+  
+
+```bash
+
+  
+
 npm install
+
+  
+
 ```
 
-### Compiles and hot-reloads for development
-```
+  
+
+  
+
+### Dev ympäristön käynnistys
+
+  
+
+```bash
+
+  
+
 npm run serve
+
+  
+
 ```
 
-### Compiles and minifies for production
-```
+  
+
+  
+
+### Kokoa projekti
+
+  
+
+```bash
+
+  
+
 npm run build
-```
 
-### Run your tests
-```
-npm run test
-```
+  
 
-### Lints and fixes files
 ```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

@@ -10,7 +10,10 @@
       @click="select()"
     >
       <div
-        :class="['die', this.number ? 'd' + this.number : 'dnull']"
+        :class="[
+          'die', 
+          this.number ? 'd' + this.number : 'dnull'
+        ]"
         :style="{
           transform: 'rotate(' + this.rotation + 'deg)'
         }"
