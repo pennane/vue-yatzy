@@ -113,7 +113,7 @@ export default {
   margin: 0.3em;
   top: 0;
   position: absolute;
-  transition: all 0.6s;
+  transition: transform 0.6s;
   transition-timing-function: ease;
 }
 
@@ -152,7 +152,7 @@ export default {
   background-repeat: no-repeat;
   background-position: center;
   cursor: pointer;
-  transition: all 0.6s;
+  transition: transform 0.6s;
   box-shadow: 5px 4px 0px 0 rgba(0, 0, 0, 0.5);
 }
 
@@ -161,7 +161,6 @@ export default {
 }
 
 .rolling:nth-child(1) > .die-inner-wrapper:not(.selected) {
-  transition: all 0.6s;
   transform: translate(100px, -20px);
 }
 
