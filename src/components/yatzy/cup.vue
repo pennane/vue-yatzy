@@ -1,9 +1,6 @@
 <template>
   <div class="cup-wrapper" @click="roll">
-    <img
-      :class="['cup', onScreen ? 'show' : null, wiggle ? 'wiggle' : null]"
-      :src="url"
-    />
+    <img :class="['cup', onScreen ? 'show' : null, wiggle ? 'wiggle' : null]" :src="url" />
   </div>
 </template>
 
@@ -16,33 +13,43 @@ export default {
     return {
       url: require("@/assets/kuppi.png"),
       wiggle: false,
-      show: false
+      show: false,
+      sound: require("@/assets/roll.ogg"),
+      hackermode: null
     };
   },
   methods: {
     async roll() {
       const sleep = this.$root.sleep;
       this.show = true;
-      await sleep(1100);
+      await sleep(800);
+
       this.wiggle = true;
-      await sleep(1000);
+      await sleep(200);
+      this.playRollingSound();
+      await sleep(700);
       this.wiggle = false;
       await sleep(30);
       this.show = false;
+    },
+    playRollingSound() {
+      if (!this.hackermode) return;
+      let play = this.$root.playSound;
+      play(this.sound);
     }
   },
   computed: {
     rolling() {
-      return this.$store.getters['game/getCurrentlyRolling'];
+      return this.$store.getters["game/getCurrentlyRolling"];
     },
     displayDice() {
-      return this.$store.getters['game/getDisplayDice'];
+      return this.$store.getters["game/getDisplayDice"];
     },
     gameNotStarted() {
-      return this.$store.getters['game/getNoGameStarted']
+      return this.$store.getters["game/getNoGameStarted"];
     },
     onScreen() {
-      return this.show || this.displayDice || this.gameNotStarted
+      return this.show || this.displayDice || this.gameNotStarted;
     }
   },
   watch: {
@@ -51,6 +58,11 @@ export default {
         this.roll();
       }
     }
+  },
+  created() {
+    window.hackermode = () => {
+      this.hackermode = true;
+    };
   }
 };
 </script>
@@ -70,7 +82,7 @@ export default {
   will-change: transform;
   transform: translate3d(260px, -30px, 0);
   transform: translate3d(260px, -50px, 0);
-  transition: all 1s;
+  transition: all 0.8s;
   padding-top: 1em;
 }
 

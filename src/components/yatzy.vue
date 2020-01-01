@@ -1,5 +1,5 @@
 <template>
-  <div class="yatzy">
+  <div v-hotkey="keymap" class="yatzy">
     <div class="game">
       <div class="left">
         <div class="left-inner">
@@ -23,10 +23,12 @@
             <Total />
           </div>
 
-          <div :style="{'opacity':(gameNotStarted || gameCompleted)?1:0,
-          'pointerEvents':(gameNotStarted || gameCompleted)?'initial':'none'}" class="new-game-buttons">
+          <div v-if="gameNotStarted || gameCompleted" class="new-game-buttons">
             <button @click="newGame({players: 1})" class="yatzyButton">1 Pelaajan peli</button>
             <button @click="newGame({players: 2})" class="yatzyButton">2 Pelaajan peli</button>
+          </div>
+          <div v-if="!gameNotStarted && !gameCompleted" class="stop-game-buttons">
+            <button class="yatzyButton warning" @click="setModalState">Lopeta peli</button>
           </div>
         </div>
       </div>
@@ -40,6 +42,7 @@
         <div class="controls-and-information">
           <div class="rolling" v-if="true">
             <button
+             :style="{'opacity':gameNotStarted?0:1}"
               :class="['yatzyButton', ableToRoll ? null : 'locked', rollsLeft <= 0 ? 'depleted' : null]"
               @click="rollDice()"
               class="yatzyButton"
@@ -52,12 +55,25 @@
             <h2 :style="{'opacity':gameNotStarted?0:1}">Vuorossa Pelaaja {{ currentPlayer + 1 }}</h2>
             <h3 :style="{'opacity':gameNotStarted?0:1}">
               ({{ rollsLeft }}
-              <span v-if="rollsLeft === 1">
-                heitto jäljellä
-              </span>
+              <span v-if="rollsLeft === 1">heitto jäljellä</span>
               <span v-else>heittoa jäljellä</span>
               )
             </h3>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" v-if="modalOpen" v-scroll-lock="modalOpen">
+      <div class="modal-inner" v-click-outside="onClickOutside">
+        <div class="modal-upper">
+          <p class="modal-title">Oletko varma?</p>
+          <button class="crossButton" @click="setModalState(false)">✖</button>
+        </div>
+        <div class="modal-content">
+          <div class="modal-buttons">
+            <button class="yatzyButton" @click="stopGame">kyllä</button>
+            <button class="yatzyButton" @click="setModalState(false)">kumoa</button>
           </div>
         </div>
       </div>
@@ -67,6 +83,7 @@
 
 <script>
 import gamelogic from "@/gamelogic";
+
 import Cup from "@/components/yatzy/cup.vue";
 import Die from "@/components/yatzy/die.vue";
 import Category from "@/components/yatzy/category.vue";
@@ -89,14 +106,38 @@ export default {
   props: {
     msg: String
   },
+  data: () => {
+    return {
+      showRestartModal: true,
+      modalOpen: false
+    };
+  },
   methods: {
+    setModalState(bool) {
+      if (typeof bool === "undefined") {
+        this.modalOpen = !this.modalOpen;
+      } else {
+        this.modalOpen = bool;
+      }
+    },
+    onClickOutside() {
+      if (this.modalOpen) {
+        this.setModalState(false);
+      }
+    },
+    selectDie() {
+      if (!this.ableToRoll) return;
+      this.$store.commit("game/SET_ROLLING_STATE", {
+        rolling: true
+      });
+    },
     async rollDice() {
       if (this.rollsLeft <= 0 || !this.ableToRoll) return;
       let sleep = this.$root.sleep;
       this.$store.commit("game/SET_ROLLING_STATE", {
         rolling: true
       });
-      await sleep(2000);
+      await sleep(1700);
       gamelogic.rollDice();
       this.$store.commit("game/SET_ROLLING_STATE", {
         rolling: false
@@ -104,11 +145,23 @@ export default {
     },
     async newGame(options) {
       let sleep = this.$root.sleep;
-      await sleep(1000);
+      await sleep(100);
       gamelogic.startNewGame(options);
+    },
+    async stopGame(options) {
+      this.setModalState(false);
+      this.$store.commit("game/SET_GAME_COMPLETED_STATE", true);
     }
   },
   computed: {
+    keymap() {
+      return {
+        'space': {
+          keydown: this.rollDice
+        }
+      }
+    },
+
     selectedDice() {
       return this.$store.getters["game/getSelectedDice"];
     },
@@ -188,6 +241,85 @@ export default {
 </style>
 
 <style scoped>
+.modal {
+  position: fixed;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 1em;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  padding-top: calc(2em + 10vw);
+}
+
+.modal-inner {
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-self: baseline;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+.modal-content {
+  padding: 1em;
+}
+.modal-upper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title {
+  margin: 0;
+  margin-left: 0.5em;
+  font-size: 1.1em;
+  font-weight: 600;
+}
+
+.modal-buttons {
+  display: flex;
+}
+
+.crossButton {
+  background-color: transparent;
+  color: black;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  box-shadow: none;
+  min-width: unset;
+  padding: 0.5em;
+  font-size: 1.1em;
+  cursor: pointer;
+  width: 2.5em;
+  height: 2.5em;
+  text-align: center;
+}
+
+.yatzyButton.warning {
+  background-color: hsla(0, 49%, 46%, 1);
+  box-shadow: 0 5px#6a2323;
+}
+
+.yatzyButton.warning:hover {
+  background-color: hsl(0, 46%, 40%);
+}
+
+.yatzyButton.warning:active {
+  transform: translateY(2px);
+  box-shadow: 0 3px #6a2323;
+}
+
+.yatzyButton.warning.locked {
+  transform: translateY(2px);
+  box-shadow: 0 3px #6a2323;
+  background-color: hsl(0, 46%, 35%);
+  color: hsl(0, 23%, 57%);
+}
+
 .controls-and-information {
   max-width: 400px;
 }
@@ -219,7 +351,16 @@ export default {
 .new-game-buttons {
   display: flex;
   flex-wrap: wrap;
-  margin-top: 5em;
+  height: 7em;
+  align-items: flex-end;
+}
+
+.stop-game-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  height: 7em;
+  align-items: flex-end;
+  justify-content: flex-end;
 }
 
 .left {

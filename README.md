@@ -22,10 +22,10 @@ Pelaa [täällä](https://yatzy.pennanen.dev/).
 
   
 
-- [ ] Mahdollisuus keskeyttää peli
+- [X] Mahdollisuus keskeyttää peli
 
-- [ ] Keyboard shortcutit pelin toiminnoille
-
+- [X] Pikanäppäimet pelin toiminnoille 
+- [] Ohjeet
 - [ ] Pisteiden tallennus / Parhaat pisteet
 
 - [ ] Visuaalinen palaute pelin voittajasta / Pisteiden korostaminen

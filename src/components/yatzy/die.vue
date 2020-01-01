@@ -1,5 +1,5 @@
 <template>
-  <div class="die-wrapper" :class="[translateToCenter ? 'rolling' : null]">
+  <div v-hotkey="keymap" class="die-wrapper" :class="[translateToCenter ? 'rolling' : null]">
     <div
       :class="[
         'die-inner-wrapper',
@@ -29,7 +29,7 @@ export default {
   name: "Die",
   data: () => {
     return {
-      selected: null,
+      selected: false,
       rotation: Math.floor(Math.random() * (10 + 10 + 1)) - 10,
       hidden: null
     };
@@ -57,6 +57,9 @@ export default {
         });
       }
     },
+    keySelect() {
+      this.select()
+    },
     setSelected(bool) {
       this.selected = bool;
     },
@@ -66,6 +69,13 @@ export default {
     }
   },
   computed: {
+    keymap() {
+      let keymap = {};
+      keymap[this.index+1] = {
+        'keydown': this.keySelect
+      }
+      return keymap
+    } ,
     moves: function() {
       return this.$store.getters["game/getMoves"];
     },
