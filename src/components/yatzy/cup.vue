@@ -14,8 +14,7 @@ export default {
       url: require("@/assets/kuppi.png"),
       wiggle: false,
       show: false,
-      sound: require("@/assets/roll.ogg"),
-      hackermode: true
+      sound: require("@/assets/roll.ogg")
     };
   },
   methods: {
@@ -33,7 +32,6 @@ export default {
       this.show = false;
     },
     playRollingSound() {
-      if (!this.hackermode) return;
       let play = this.$root.playSound;
       play(this.sound);
     }
