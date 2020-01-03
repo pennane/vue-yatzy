@@ -15,7 +15,7 @@ export default {
       wiggle: false,
       show: false,
       sound: require("@/assets/roll.ogg"),
-      hackermode: null
+      hackermode: true
     };
   },
   methods: {
