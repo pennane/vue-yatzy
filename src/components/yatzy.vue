@@ -114,7 +114,6 @@ export default {
   },
   methods: {
     track() {
-      console.log("yes")
       this.$ga.page({
         page: "/",
         title: "Yatzy homepage",
@@ -155,7 +154,6 @@ export default {
       let sleep = this.$root.sleep;
       await sleep(100);
       gamelogic.startNewGame(options);
-      console.log(this.$ga);
       this.$ga.event({
         eventCategory: "Game",
         eventAction: "new game",
