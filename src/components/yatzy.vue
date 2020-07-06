@@ -42,7 +42,7 @@
         <div class="controls-and-information">
           <div class="rolling" v-if="true">
             <button
-             :style="{'opacity':gameNotStarted?0:1}"
+              :style="{'opacity':gameNotStarted?0:1}"
               :class="['yatzyButton', ableToRoll ? null : 'locked', rollsLeft <= 0 ? 'depleted' : null]"
               @click="rollDice()"
               class="yatzyButton"
@@ -113,6 +113,14 @@ export default {
     };
   },
   methods: {
+    track() {
+      console.log("yes")
+      this.$ga.page({
+        page: "/",
+        title: "Yatzy homepage",
+        location: window.location.href
+      });
+    },
     setModalState(bool) {
       if (typeof bool === "undefined") {
         this.modalOpen = !this.modalOpen;
@@ -147,6 +155,13 @@ export default {
       let sleep = this.$root.sleep;
       await sleep(100);
       gamelogic.startNewGame(options);
+      console.log(this.$ga);
+      this.$ga.event({
+        eventCategory: "Game",
+        eventAction: "new game",
+        eventLabel: "a new yatzy game",
+        eventValue: options.players
+      });
     },
     async stopGame(options) {
       this.setModalState(false);
@@ -156,10 +171,10 @@ export default {
   computed: {
     keymap() {
       return {
-        'space': {
+        space: {
           keydown: this.rollDice
         }
-      }
+      };
     },
 
     selectedDice() {
@@ -196,7 +211,9 @@ export default {
       return this.rollsLeft > 0 && !this.rolling && !this.gameNotStarted;
     }
   },
-  created() {}
+  created() {
+    this.track()
+  }
 };
 </script>
 
